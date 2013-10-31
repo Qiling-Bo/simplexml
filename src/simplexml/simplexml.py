@@ -21,9 +21,9 @@ def loads(xml):
 
 
 class xml2dict(object):
-    Dict = {}
 
     def __init__(self, xml):
+        self.Dict = {}
         self.doc = parseString(xml)
         self.remove_blanks(self.doc)
         self.doc.normalize()
@@ -76,9 +76,9 @@ class xml2dict(object):
 
 
 class dict2xml(object):
-    doc = Document()
 
     def __init__(self, diction, **kvargs):
+        self.doc = Document()
         #if len(structure) == 1:
         #rootName = str(structure.keys()[0])
         rootName = kvargs.get("rootName", "xml")
