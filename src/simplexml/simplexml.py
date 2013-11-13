@@ -5,6 +5,8 @@ from xml.dom.minidom import Document, parseString, Node
 from pprint import pprint as pp
 
 
+ROOTNAME = "xml"    # xml need a root name, dict doesn't.
+
 def dumps(diction):
     '''convert diction to xml
     '''
@@ -29,7 +31,7 @@ class xml2dict(object):
         self.doc.normalize()
         self.root = self.doc.documentElement
         mydict = self.parse(self.root)
-        self.Dict.update(mydict)
+        self.Dict.update(mydict[ROOTNAME])
 
     def remove_blanks(self, node):
         for x in node.childNodes:
@@ -85,7 +87,7 @@ class dict2xml(object):
         self.doc = Document()
         #if len(structure) == 1:
         #rootName = str(structure.keys()[0])
-        rootName = kvargs.get("rootName", "xml")
+        rootName = kvargs.get("rootName", ROOTNAME)
         self.root = self.doc.createElement(rootName)
 
         self.doc.appendChild(self.root)
