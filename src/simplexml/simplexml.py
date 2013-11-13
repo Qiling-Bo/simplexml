@@ -28,7 +28,8 @@ class xml2dict(object):
         self.remove_blanks(self.doc)
         self.doc.normalize()
         self.root = self.doc.documentElement
-        self.parse(self.root)
+        mydict = self.parse(self.root)
+        self.Dict.update(mydict)
 
     def remove_blanks(self, node):
         for x in node.childNodes:
@@ -61,14 +62,17 @@ class xml2dict(object):
                     myDict.update({listname: {tag: self.to_list(father)}})
                 else:
                     # parse a recurse dict
+                    subDict = {}
                     for node in father.childNodes:
-                        self.parse(node)
+                        subDict.update(self.parse(node))
+                    myDict.update({father.nodeName: subDict})
             else:
                 # parse a value
                 node = father.childNodes[0]
                 if(node.nodeType == Node.TEXT_NODE):
                     myDict.update({father.nodeName: node.nodeValue})
-        self.Dict.update(myDict)
+                else:
+                    myDict.update({father.nodeName: self.parse(node)})
         return myDict
 
     def load(self):
@@ -120,7 +124,12 @@ if __name__ == '__main__':
         "errorcode": 7,
         "errormsg": u"Noise Too High",
         "signal": {"data": [1, 2, 3]},
-        "noise": {"data": [5, 6, 7]}
+        "noise": {"data": [5, 6, 7]},
+        "round_59": {
+            "fail": 1,
+            "test_time": "2013-11-11 17:54:21",
+            "test_result": "Pass"
+            }
     }
 
     print("original:")
