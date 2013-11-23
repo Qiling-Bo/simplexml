@@ -4,8 +4,8 @@
 from xml.dom.minidom import Document, parseString, Node
 from pprint import pprint as pp
 
-
 ROOTNAME = "xml"    # xml need a root name, dict doesn't.
+
 
 def dumps(diction):
     '''convert diction to xml
