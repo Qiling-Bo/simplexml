@@ -1,5 +1,15 @@
 #!/usr/bin/env python
 # encoding: utf-8
+__version__ = 0.1
+__author__ = "@boqiling"
+
+'''
+This module is used to convert diction to xml and convert xml to diction
+usage:
+    import simplexml
+    simplexml.dumps(dict)   # output xml string
+    simplexml.loads(xml)    # output python dict
+'''
 
 from xml.dom.minidom import Document, parseString, Node
 from pprint import pprint as pp
