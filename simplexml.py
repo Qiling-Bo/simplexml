@@ -1,18 +1,20 @@
 #!/usr/bin/env python
 # encoding: utf-8
-__version__ = 0.1
-__author__ = "@boqiling"
-
 '''
 This module is used to convert diction to xml and convert xml to diction
 usage:
     import simplexml
     simplexml.dumps(dict)   # output xml string
     simplexml.loads(xml)    # output python dict
+changelist:
+    0.2: add unicode support.
 '''
 
+__version__ = 0.2
+__author__ = "@boqiling"
+
+
 from xml.dom.minidom import Document, parseString, Node
-from pprint import pprint as pp
 
 ROOTNAME = "xml"    # xml need a root name, dict doesn't.
 
@@ -21,27 +23,25 @@ def dumps(diction):
     '''convert diction to xml
     '''
     if(type(diction) == dict):
-        xml = dict2xml(diction).dump()
+        xml = Dict2Xml().trans(diction)
         return xml
 
 
 def loads(xml):
     '''convert xml to diction
     '''
-    diction = xml2dict(xml).load()
+    diction = Xml2Dict().trans(xml)
     return diction
 
 
-class xml2dict(object):
+class Xml2Dict(object):
+    '''class to convert the xml to python diction
+       usage:
+           diction = Xml2Dict().trans("<xml>xml_string</xml>")
+    '''
 
-    def __init__(self, xml):
+    def __init__(self):
         self.Dict = {}
-        self.doc = parseString(xml)
-        self.remove_blanks(self.doc)
-        self.doc.normalize()
-        self.root = self.doc.documentElement
-        mydict = self.parse(self.root)
-        self.Dict.update(mydict[ROOTNAME])
 
     def remove_blanks(self, node):
         for x in node.childNodes:
@@ -87,21 +87,25 @@ class xml2dict(object):
                     myDict.update({father.nodeName: self.parse(node)})
         return myDict
 
-    def load(self):
+    def trans(self, xml):
+        self.doc = parseString(xml.encode("utf-8"))
+        self.remove_blanks(self.doc)
+        self.doc.normalize()
+        self.root = self.doc.documentElement
+        mydict = self.parse(self.root)
+        self.Dict.update(mydict[ROOTNAME])
         return self.Dict
 
 
-class dict2xml(object):
+class Dict2Xml(object):
+    '''class to convert the python diction to xml
+       usage:
+           xml = Dict2Xml().trans(diction)
+    '''
 
-    def __init__(self, diction, **kvargs):
+    def __init__(self, **kvargs):
         self.doc = Document()
-        #if len(structure) == 1:
-        #rootName = str(structure.keys()[0])
-        rootName = kvargs.get("rootName", ROOTNAME)
-        self.root = self.doc.createElement(rootName)
-
-        self.doc.appendChild(self.root)
-        self.build(self.root, diction)
+        self.rootName = kvargs.get("rootName", ROOTNAME)
 
     def build(self, father, structure):
         if type(structure) == dict:
@@ -119,22 +123,27 @@ class dict2xml(object):
                 self.build(tag, l)
                 grandFather.appendChild(tag)
         else:
-            data = str(structure)
+            data = unicode(structure)
             tag = self.doc.createTextNode(data)
             father.appendChild(tag)
 
-    def dump(self):
+    def trans(self, diction):
+        self.root = self.doc.createElement(self.rootName)
+        self.doc.appendChild(self.root)
+        self.build(self.root, diction)
         return self.doc.toprettyxml(indent="    ")
         #return self.doc.toxml("utf-8")
 
 
 if __name__ == '__main__':
+    from pprint import pprint as pp
+
     example = {
         "sn": 2103839,
         "item": "SNR",
         "date": "2009-11-25",
         "errorcode": 7,
-        "errormsg": u"Noise Too High",
+        "errormsg": u"噪声太大",
         "signal": {"data": [1, 2, 3]},
         "noise": {"data": [5, 6, 7]},
         "round_59": {
@@ -149,7 +158,9 @@ if __name__ == '__main__':
     print("dict to xml:")
     myxml = dumps(example)
     print(myxml)
+    print(type(myxml))
 
     print("xml to dict:")
     mydict = loads(myxml)
     pp(mydict)
+    print mydict["errormsg"]
