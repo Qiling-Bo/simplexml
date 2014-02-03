@@ -19,11 +19,11 @@ from xml.dom.minidom import Document, parseString, Node
 ROOTNAME = "xml"    # xml need a root name, dict doesn't.
 
 
-def dumps(diction):
+def dumps(diction, rootname="XML"):
     '''convert diction to xml
     '''
     if(type(diction) == dict):
-        xml = Dict2Xml().trans(diction)
+        xml = Dict2Xml(rootname).trans(diction)
         return xml
 
 
@@ -93,7 +93,7 @@ class Xml2Dict(object):
         self.doc.normalize()
         self.root = self.doc.documentElement
         mydict = self.parse(self.root)
-        self.Dict.update(mydict[ROOTNAME])
+        self.Dict.update(mydict[self.root.nodeName])
         return self.Dict
 
 
@@ -103,9 +103,9 @@ class Dict2Xml(object):
            xml = Dict2Xml().trans(diction)
     '''
 
-    def __init__(self, **kvargs):
+    def __init__(self, rootname):
         self.doc = Document()
-        self.rootName = kvargs.get("rootName", ROOTNAME)
+        self.rootName = rootname
 
     def build(self, father, structure):
         if type(structure) == dict:
@@ -143,7 +143,7 @@ if __name__ == '__main__':
         "item": "SNR",
         "date": "2009-11-25",
         "errorcode": 7,
-        "errormsg": u"噪声太大",
+        u"错误信息": u"噪声太大",
         "signal": {"data": [1, 2, 3]},
         "noise": {"data": [5, 6, 7]},
         "round_59": {
@@ -163,4 +163,4 @@ if __name__ == '__main__':
     print("xml to dict:")
     mydict = loads(myxml)
     pp(mydict)
-    print mydict["errormsg"]
+    print mydict[u"错误信息"]
