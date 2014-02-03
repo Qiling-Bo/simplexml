@@ -16,8 +16,6 @@ __author__ = "@boqiling"
 
 from xml.dom.minidom import Document, parseString, Node
 
-ROOTNAME = "xml"    # xml need a root name, dict doesn't.
-
 
 def dumps(diction, rootname="XML"):
     '''convert diction to xml
